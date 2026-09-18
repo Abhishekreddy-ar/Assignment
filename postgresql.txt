@@ -1,0 +1,74 @@
+-----created Tables-----
+CREATE TABLE tenants (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE projects (
+    id SERIAL PRIMARY KEY,
+    tenant_id INTEGER NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE environments (
+    id SERIAL PRIMARY KEY,
+    project_id INTEGER NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+----Add Foreign Keys----
+ALTER TABLE projects
+ADD CONSTRAINT fk_projects_tenant
+FOREIGN KEY (tenant_id)
+REFERENCES tenants(id);
+
+ALTER TABLE environments
+ADD CONSTRAINT fk_environments_project
+FOREIGN KEY (project_id)
+REFERENCES projects(id);
+
+Add Indexes
+CREATE INDEX idx_projects_tenant_id
+ON projects(tenant_id);
+
+CREATE INDEX idx_environments_project_id
+ON environments(project_id);
+
+------Insert the data-----
+INSERT INTO tenants (name)
+VALUES
+    ('Tenant A'),
+    ('Tenant B');
+
+INSERT INTO projects (tenant_id, name)
+VALUES
+    (1, 'AI Chatbot'),
+    (1, 'Document Assistant'),
+    (2, 'Customer Support AI'),
+    (2, 'Sales Assistant');
+
+INSERT INTO environments (project_id, name)
+VALUES
+    (1, 'Development'),
+    (1, 'QA'),
+    (1, 'Production'),
+    (2, 'Development'),
+    (2, 'Production'),
+    (3, 'Development'),
+    (3, 'Production'),
+    (4, 'Development'),
+    (4, 'Production');
+
+----statements----
+SELECT *
+FROM projects
+WHERE tenant_id = 1;
+
+UPDATE projects
+SET description = 'AI chatbot observability project'
+WHERE name = 'AI Chatbot';
+
+ALTER TABLE projects
+DROP COLUMN description;
+---end-----
